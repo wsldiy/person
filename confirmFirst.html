@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>确认订单</title>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="zpSrc/index.css">
+    <link rel="stylesheet" href="zpSrc/history.css">
+    <script src="zpSrc/jquery-3.0.0.min.js" type="text/javascript"></script>
+    <script src="zpSrc/core.js" type="text/javascript"></script>
+    <script src="zpSrc/cipher-core.js" type="text/javascript"></script>
+    <script src="zpSrc/tripledes.js" type="text/javascript"></script>
+    <script src="zpSrc/mode-ecb.js" type="text/javascript"></script>
+    <script>
+      (function (win, doc) {
+        var resize = 'orientationchange' in window ? 'orientationchange' : 'resize';
+
+        function change() {
+          var html = doc.documentElement;
+          html.style.fontSize = doc.documentElement.clientWidth / 18 + 'px';
+        }
+
+        change();
+
+        win.addEventListener(resize, change, false);
+        win.addEventListener('load', change, false);
+        doc.addEventListener('DOMContentLoaded', false);
+      })(window, document);
+    </script>
+</head>
+<body style="background-color: #f7f7f7">
+<!--<div class="pad-l-2" style="background-color: #fff;height: 3rem;line-height: 3rem;vertical-align: top;"><a href="./confirmChooseAdr.html" class="font-22">添加收货地址</a></div>-->
+<a href="./confirmChooseAdr.html">
+    <div class="pad-l-1 h-3 line-h-3 v-align-t" style="background-color: #fff;">
+        <span class="font-22 name"></span><span class="dis-inline pad-l-2 mobile"></span><span class="dis-inline pad-l-4 h-6 line-h-6 v-align-t font-big">></span>
+    </div>
+    <div class="pad-l-1 h-3 line-h-1 v-align-t" style="background-color: #fff;">
+        <span class="dis-inline font-21 address"></span><span class="dis-inline font-21 area"></span>
+    </div>
+</a>
+<div id="catchSome" class="hd_ad_list" style="width:100%;height:5rem;border-bottom: 1px solid #666;margin-top: 1rem;font-size: 0">
+</div>
+<!--提交订单-->
+<div style="background-color: #fff;height: 2rem;position: fixed;left:0;right:0;bottom:0">
+    <div class="dis-inline font-21 v-align-t line-h-2 t-align-r" style="width: 25%"><span style="color:#999;">满两件包邮</span></div>
+    <div class="dis-inline" style="width: 35%;text-align: center;height:2rem;">
+        <span class="dis-inline pad-l-1 font-21" style="height:2rem;line-height: 2rem;vertical-align: top;color: #FE7460;">邮费：￥<span id="totalPrice"></span>.00</span>
+    </div>
+    <div class="dis-inline payFirst" style="width:35%;text-align: right;height:2rem;line-height:2rem;vertical-align: top">
+        <button style="background-color: #975429;border:none!important;width:6rem;height: 2rem;color:#fff;" class="toPay">提交订单</button>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="zpSrc/index.js"></script>
+<script type="text/javascript" src="zpSrc/history.js"></script>
+<script type="text/javascript" src="zpSrc/crypt.js"></script>
+<script>
+  var token = JSON.parse(window.localStorage.getItem('token'));
+  var noParams = window.location.href.split('?')[0];
+  var getUrlParam = function(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURIComponent(r[2]);
+    return null;
+  };
+  var u = getUrlParam('expressAddressId') || noParams;
+  var json_address = {"customerId":token.customerId};
+  //   加密转化成json字符串
+  var str = encryptByDES(JSON.stringify(json_address));
+  //      请求
+  $.post('http://wawatest.daniuyx.com/wawa/api/getExpressAddress',{json: str},function (res) {
+      console.log('收货地址列表',JSON.parse(decryptByDES(res)));
+      var list = JSON.parse(decryptByDES(res));//{data: Array(0), state: "ok"}
+      var allList = list.data;
+      if(u == window.location.href.split('?')[0]){
+        $('.name').text(allList[0].name);
+        $('.mobile').text(allList[0].mobile);
+        $('.address').text(allList[0].area);
+        $('area').text(allList[0].address);
+      }else{
+        var theAdr = JSON.parse(window.localStorage.getItem('chooseAdr'));
+        $('.name').text(theAdr.name);
+        $('.mobile').text(theAdr.mobile);
+        $('.address').text(theAdr.addr);
+        $('.area').text(theAdr.area);
+      }
+      for(var i=0;i<allList.length;i++){
+        if($('.name').text() === allList[i].name){
+          var expressAddressId = allList[i].expressAddressId;
+          window.localStorage.setItem('expressAddressId',JSON.stringify(expressAddressId));
+        }
+      }
+  });
+    var haveGet = JSON.parse(window.localStorage.getItem('haveCatch'));
+    var prizeIdsArr = [];//提取的货物编号
+    //    处理提取的娃娃
+    var prizesArr = [];
+    for(var i=0;i<haveGet.length;i++){
+      prizeIdsArr.push(haveGet[i].prizeId);//提货的编号
+      prizesArr.push(haveGet[i].goodsId);
+    }
+//    计算金额
+  var json_money = {"prizeIds":prizeIdsArr};
+  //   加密转化成json字符串
+  var str = encryptByDES(JSON.stringify(json_money));
+  //      请求
+  $.ajax({
+    type: 'post',
+    url: 'http://wawatest.daniuyx.com/wawa/api/getPrizeOrderPrice',
+    data: {json: str},
+    success: function (res) {
+      var list = JSON.parse(decryptByDES(res));
+      console.log('计算金额',list);
+      $('#totalPrice').text(list.data);
+    }
+  });
+    window.localStorage.setItem('getPrizeIds',JSON.stringify(prizeIdsArr));
+  var singleId = Array.from(new Set(prizesArr));
+  console.log('去重数组',singleId);
+
+  var singleObj = {};
+  for(var i=0;i<singleId.length;i++){
+    singleObj[singleId[i]] = [];
+  }
+  console.log('去重id后的新对象',singleObj);
+  for(var i=0;i<haveGet.length;i++){
+    for(var j=0;j<singleId.length;j++){
+      if(haveGet[i].goodsId === singleId[j]){
+        singleObj[singleId[j]].push(haveGet[i]);
+      }
+    }
+  }
+  console.log('新的对象',singleObj);
+  for(var x in singleObj) {
+    console.log(singleObj[x].length);
+    $.each(singleObj[x].slice(0,1), function (i, obj) {
+      $('<div class="dis-inline" style="background-color: #ffffff;height:5rem;width:90%;">'+
+        '<div class="dis-inline" style="text-align:left;width:15%;height: 5rem;vertical-align: top;line-height: 5rem;"><img src="'+obj.img+'" alt="" style="height:4rem;"></div>'+
+        '<span class="dis-inline pad-l-2 font-22 t-align-l" style="width:70%;">'+
+            '<span style="color: #666;height:2rem;line-height: 3rem;vertical-align: top;" class="dis-inline font-22 font-wei">'+obj.goodsName+'</span>'+
+            '<span style="color: #999;height:1.5rem;line-height: 2.5rem;vertical-align: top;" class="dis-inline font-21">编号：'+obj.prizeId+'</span>'+
+            '<span style="color: #999;height:1.5rem;line-height: 1.5rem;vertical-align: top;" class="dis-inline font-21">'+obj.createDate+'</span>'+
+        '</span>'+
+    '</div>'+
+    '<div class="dis-inline v-align-t" style="background-color: #ffffff;height:5rem;width:10%;line-height: 5rem;">'+
+            '<span class="h-5 font-16">x</span><sapn class="h-5 font-16">'+singleObj[x].length+'</sapn></div>'+
+    '</div>').appendTo('#catchSome');
+    });
+  }
+    $('.payFirst').click(function () {
+      var token = JSON.parse(window.localStorage.getItem('token'));
+      var prizeIds = JSON.parse(window.localStorage.getItem('getPrizeIds'));
+      var expressAddressId = JSON.parse(window.localStorage.getItem('expressAddressId'));
+      var json_up = {
+        "prizeIds":prizeIds,
+        "customerId":token.customerId,
+        'goodsType':2,
+        "expressAddressId":expressAddressId};
+      //   加密转化成json字符串
+      var str = encryptByDES(JSON.stringify(json_up));
+      //      请求
+      $.post('http://wawatest.daniuyx.com/wawa/api/extractPrize',{json: str},function (res) {
+          console.log('提交预支付订单', JSON.parse(decryptByDES(res)));
+          var list = JSON.parse(decryptByDES(res));//{data: Array(0), state: "ok"}
+          if(list.state === 'ok'){
+            alert('提交订单成功');
+            if($('#totalPrice').text() == 0){
+              window.location.href = './index.html';}
+              else{
+              window.location.href = list.data.openUrl;
+            }
+          }else{
+            alert(list.msg);
+          }
+        })
+    });
+</script>
+</html>

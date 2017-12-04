@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新建收货地址</title>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="zpSrc/index.css">
+    <link rel="stylesheet" href="zpSrc/history.css">
+    <style type="text/css">
+        .edit{
+            border: 0;
+        }
+        .chooseBtn {
+            /*display: none;*/
+        }
+
+        .choose-label {
+            box-shadow: #ccc 0px 0px 0px 1px;
+            width: 3rem;
+            height: 1rem;
+            display: inline-block;
+            border-radius: 1rem;
+            position: relative;
+            background-color: #bdbdbd;
+            overflow: hidden;
+        }
+
+        .choose-label .beforeQ {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 1.5rem;
+            height: 1rem;
+            display: inline-block;
+            border-radius: 1rem;
+            background-color: #fff;
+            z-index: 20;
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+
+        label.choose-label .beforeQ {
+            left: 0rem;
+        }
+        label.choose-label .beforeQQ {
+            left: 1.5rem;
+        }
+
+        label.choose-label {
+            background-color:#bdbdbd;
+        }
+        label.choose-labelQ {
+            background-color:#975429;
+        }
+    </style>
+    <script src="zpSrc/jquery-3.0.0.min.js" type="text/javascript"></script>
+    <script src="zpSrc/core.js" type="text/javascript"></script>
+    <script src="zpSrc/cipher-core.js" type="text/javascript"></script>
+    <script src="zpSrc/tripledes.js" type="text/javascript"></script>
+    <script src="zpSrc/mode-ecb.js" type="text/javascript"></script>
+    <script>
+      (function (win, doc) {
+        var resize = 'orientationchange' in window ? 'orientationchange' : 'resize';
+
+        function change() {
+          var html = doc.documentElement;
+          html.style.fontSize = doc.documentElement.clientWidth / 18 + 'px';
+        }
+
+        change();
+
+        win.addEventListener(resize, change, false);
+        win.addEventListener('load', change, false);
+        doc.addEventListener('DOMContentLoaded', false);
+      })(window, document);
+    </script>
+</head>
+<body style="background-color: #f7f7f7">
+<div class="pad-l-1" style="background-color: #fff;height: 3rem;line-height: 3rem;vertical-align: top;">
+    <span class="font-22">收货人：<input type="text" class="edit" value=""></span>
+</div>
+<div class="pad-l-1" style="background-color: #fff;height: 3rem;line-height: 3rem;vertical-align: top;">
+    <span class="font-22">联系方式：<input type="text" class="edit" value=""></span>
+</div>
+<div class="pad-l-1" style="background-color: #fff;height: 3rem;line-height: 3rem;vertical-align: top;">
+    <span class="font-22">所在地区：<input type="text" class="edit" value=""></span>
+</div>
+<div class="pad-l-1" style="background-color: #fff;height: 3rem;line-height: 1rem;vertical-align: top;">
+    <span class="font-22">详细地址：<input type="text" class="edit" value="" maxlength="85"></span>
+</div>
+<div class="pad-l-1" style="background-color: #fff;margin-top: 1rem;">
+    <span class="font-22 dis-inline" style="height: 3rem;line-height: 3rem;vertical-align: top;">默认地址：设置为默认收货地址
+    <span class="dis-inline" style="line-height: 3.5rem;vertical-align: top;margin-left:1rem;">
+        <label id="chooseDefault" class="choose-label"><sapn class="beforeQ"></sapn></label>
+    </span>
+    </span>
+</div>
+<!--保存并使用-->
+<div style="background-color: #fff;height: 2rem;position: fixed;left:0;right:0;bottom:0;width:100%;">
+    <div class="dis-inline" style="background-color: #975429;width:100%;text-align: center;height:2rem;line-height:2rem;vertical-align: top">
+        <button id="postAdr" style="background-color: #975429;border:none!important;width:6rem;height: 2rem;color:#fff;">保存并使用</button>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="zpSrc/index.js"></script>
+<script type="text/javascript" src="zpSrc/history.js"></script>
+<script>
+  function encryptByDES(message) {
+    var key = "V29n8rqY38b7HMXBcYfu09K0";
+    var keyHex = CryptoJS.enc.Utf8.parse(key);
+    var encrypted = CryptoJS.DES.encrypt(message, keyHex, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted.toString();
+  }
+
+  function decryptByDES(ciphertext) {
+    var key = "V29n8rqY38b7HMXBcYfu09K0";
+    var keyHex = CryptoJS.enc.Utf8.parse(key);
+    var decrypted = CryptoJS.DES.decrypt({
+      ciphertext: CryptoJS.enc.Hex.parse(ciphertext)
+//      ciphertext: CryptoJS.enc.Base64.parse(ciphertext)
+    }, keyHex, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  }
+</script>
+<script>
+  window.onload = function () {
+    $('#chooseDefault').click(function () {
+      $('label.choose-label .beforeQ').toggleClass('beforeQQ');
+      $('label.choose-label').toggleClass('choose-labelQ');
+    });
+    $('#postAdr').on('click',function () {
+      if($('label.choose-label .beforeQ').hasClass('beforeQQ')){
+        var isDefault = 1
+      }else{
+        var isDefault = 0;
+      }
+      var name = $($('.edit')[0]).val();
+      var mobile = $($('.edit')[1]).val();
+      var area =  $($('.edit')[2]).val();
+      var address = $($('.edit')[3]).val();
+      var token = JSON.parse(window.localStorage.getItem('token'));
+      var json = {"expressAddressId":'','name':name,'mobile':mobile,'area':area,'address':address,"customerId":token.customerId,"isDefault":isDefault};
+      //   加密转化成json字符串
+      var str = encryptByDES(JSON.stringify(json));
+      //      请求
+      $.post('http://wawatest.daniuyx.com/wawa/api/addExpressAddress',{json: str},function (res) {
+          console.log(JSON.parse(decryptByDES(res)));
+          var list = JSON.parse(decryptByDES(res));//{data: Array(0), state: "ok"}
+          var addList = list.data;
+          if(list.state === 'ok'){window.location.href = './confirmChooseAdr.html'}
+        });
+    });
+  }
+</script>
+</html>

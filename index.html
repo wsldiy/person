@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>在线抓娃娃</title>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="zpSrc/index.css">
+    <link rel="stylesheet" href="zpSrc/history.css">
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+    </style>
+    <script src="zpSrc/jquery-3.0.0.min.js" type="text/javascript"></script>
+    <script src="zpSrc/socket.io.js" type="text/javascript"></script>
+    <script src="zpSrc/core.js" type="text/javascript"></script>
+    <script src="zpSrc/cipher-core.js" type="text/javascript"></script>
+    <script src="zpSrc/tripledes.js" type="text/javascript"></script>
+    <script src="zpSrc/mode-ecb.js" type="text/javascript"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="//imgcache.qq.com/open/qcloud/video/vcplayer/TcPlayer-2.2.0.js" charset="utf-8"></script>
+    <script>
+      (function (win, doc) {
+        var resize = 'orientationchange' in window ? 'orientationchange' : 'resize';
+
+        function change() {
+          var html = doc.documentElement;
+          html.style.fontSize = doc.documentElement.clientWidth / 18 + 'px';
+        }
+        change();
+        win.addEventListener(resize, change, false);
+        win.addEventListener('load', change, false);
+        doc.addEventListener('DOMContentLoaded', false);
+      })(window, document);
+    </script>
+</head>
+<body style="background-image: url(zpSrc/img/bg.jpg);width:100%;height:100%;overflow-x:hidden;position: relative;">
+<div id="toDown" class="h-2 position-zz">
+    <img src="zpSrc/img/72.png" alt="" class="h-2 pad-t-half-4 pad-b-half-4 z-idx-2000">
+    <span class="dis-inline font-21 z-idx-2000 color-w pad-l-half-2">下载</span>
+    <a href="" style="color:#cfc626;" class="font-21 z-idx-2000">在线抓娃娃</a>
+    <span style="color: #fff;" class="font-21 z-idx-2000">客户端送金币，体验更流畅！</span>
+    <a href="" class="dis-inline font-21 z-idx-2000" style="color: #fff;">></a>
+</div>
+<!--视频-->
+<div id="id_test_video" style="width:100%; height:auto;"></div>
+<!--<div id="test_video">-->
+    <!--&lt;!&ndash;<video id="videoElement" autoplay style="width:100%; height:100%;"></video>&ndash;&gt;-->
+    <!--<canvas id="video-canvas" style="width:100%!important;height:20rem!important;"></canvas>-->
+<!--</div>-->
+<!--照相机-->
+<div id="camera" style="position: absolute;top:30%;left:88%;">
+    <img src="zpSrc/img/change.png" class="h-4 w-2">
+</div>
+<!--&lt;!&ndash;加载图片&ndash;&gt;-->
+<!--&lt;!&ndash;<div class="cover" style="position:absolute;top:0;left:0;width:100%;height: 65%;background-color: #00CC47"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;<div class="cover" style="position: absolute;top:30%;left:26%;">&ndash;&gt;-->
+<!--&lt;!&ndash;<img src="zpSrc/img/load.png" class="h-4 w-9">&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!--&lt;!&ndash;<div class="cover" style="position: absolute;top:44%;left:46%;">&ndash;&gt;-->
+<!--&lt;!&ndash;<span class="font-22 font-wei w-4 h-4 color-w">加载中...</span>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!--下方遮罩玻璃-->
+<div id="glass" class="h-4" style="width:6rem;position: absolute;top:53%;left:65%;">
+    <span class="font-22 font-wei w-4 h-4 color-w nickName"></span><br>
+    <span class="font-22 font-wei w-4 h-4 color-w">本次：</span><span class="sellCoin color-w"></span><br>
+    <span class="font-22 font-wei w-4 h-4 color-w">余额：</span><span class="balance color-w"></span>
+</div>
+<!--开始后的倒计时-->
+<div id="count" class="h-4 dis-none w-6" style="position: absolute;top:55%;left:65%;">
+    <span class="font-22 font-wei w-4 h-4 countNum color-w">25</span>
+</div>
+<!--主页按钮组-->
+<div id="main" style="height: 6.15rem;margin-top: 1rem;" class="pad-b-1 t-align-c">
+    <div style="padding-left: 0.4rem;padding-right: 0.4rem;">
+        <img src="zpSrc/img/btn_pay_nor.png" alt="" class="chongzhi dis-inline h-3"
+             style="width:4.5rem;padding-right: 1.5rem;">
+        <button id="toStartGame" class="dis-inline h-3 t-align-c v-align-t"
+                style="width: 7.5rem;border:none!important;border-radius: 4rem;background-color: #A56740;padding-top:0.2rem;">
+            <span class="dis-inline font-wei" style="font-size: 1rem;color: #ffffff;">开始游戏</span><br>
+            <span class="dis-inline v-align-t" style="font-size: 0.7rem;color: #ffffff;">19金币/次</span>
+        </button>
+        <img src="zpSrc/img/btn_switch_nor.png" alt="" class="change dis-inline"
+             style="width:4.5rem;height: 3rem;padding-left: 1.5rem;" onclick="">
+    </div>
+    <div style="height: 3.5rem;padding-top: 0.4rem;text-align: left;">
+        <img src="zpSrc/img/btn_setting_nor.png" class="shezhi dis-inline btn-2">
+        <img src="zpSrc/img/btn_prize_nor.png" class="myPrize dis-inline btn-2">
+        <img src="zpSrc/img/btn_record_nor.png" class="getRecord dis-inline btn-2">
+        <img src="zpSrc/img/btn_details_nor.png" class="productInformation dis-inline btn-2">
+    </div>
+</div>
+<!--操作按钮组-->
+<div id="operate" class="dis-none" style="font-size: 0;width:20rem;margin-top: 1rem;">
+    <div class="dis-inline h-6 position-r" style="width:58%;margin-top: 0.5rem;">
+        <!--上下-->
+        <span class="dis-inline h-3 w-percent-100 t-align-c">
+        <span class="dis-inline upNor upBtn h-3 w-percent-50"></span>
+    </span>
+        <span class="dis-inline h-3 w-percent-100 t-align-c">
+        <span class="dis-inline downNor downBtn h-3 w-percent-50"></span>
+    </span>
+        <!--左右-->
+        <div style="position: absolute;left:0;top:1.5rem;" class="w-percent-100">
+        <span class="dis-inline h-3 w-percent-50 t-align-c">
+            <span class="dis-inline leftNor leftBtn h-3 w-percent-50"></span>
+        </span>
+            <span class="dis-inline h-3 w-percent-50 t-align-c">
+            <span class="dis-inline rightNor rightBtn h-3 w-percent-50"></span>
+        </span>
+        </div>
+    </div>
+    <!--右侧-->
+    <div class="w-percent-40 dis-inline t-align-c h-6 line-h-4 v-align-t" style="padding-top: 1.5rem;">
+        <span class="dis-inline startNor confirmBtn h-4 w-percent-50"></span>
+    </div>
+</div>
+<!--充值-->
+<div id="hd_ad_history_page" class="dis-none">
+    <div class="hd_ad_hd w-percent-100 t-align-l h-3">
+        <div class="hd_ad_back dis-inline h-2 line-h-3 v-align-m w-percent-100 t-align-l pad-t-half">
+            <img src="zpSrc/img/close.png" class="h-2 w-2">
+        </div>
+        <div style="width:100%;text-align:center;color: #000;height: 2rem;line-height: 2rem;vertical-align: middle"
+             class="dis-inline font-wei pad-t-half">
+            <span class="font-big">充娃娃币</span>
+        </div>
+    </div>
+    <div id="moneyChongZhi"></div>
+</div>
+<!--换一台-->
+<div id="hd_ad_history_page_change" style="display:none;">
+    <div class="hd_ad_hd pad-t-half">
+        <div class="hd_ad_back dis-inline w-percent-100 t-align-l">
+            <img src="zpSrc/img/close.png" class="h-2 dis-inline pad-l-half close">
+            <img src="zpSrc/img/text_logo.png" class="h-1-half dis-inline pad-l-3">
+        </div>
+    </div>
+    <!--换一批娃娃列表-->
+    <div style="background-color: #FDEC02;padding-left: 0.25rem;padding-right: 0.25rem;">
+        <div class="change_list h-9 mar-b-half" style="height: 25rem"></div>
+    </div>
+    <!--<div class="pos-fix t-align-c w-percent-33" style="background-color: #993300;left:33%;right:0;bottom:0;">-->
+    <!--<span style="color: #fff;">换一批</span>-->
+    <!--</div>-->
+</div>
+<!--设置-->
+<div id="hd_ad_history_page_shezhi" class="dis-none">
+    <div class="hd_ad_hd pad-t-half" style="border-radius: 1rem;">
+        <div class="hd_ad_back h-2 v-align-t line-h-2"><img src="zpSrc/img/close.png" class="h-2 w-2"></div>
+        <p style="color:#000;" class="font-big font-wei line-h-2 v-align-t">设置</p>
+    </div>
+    <div class="t-align-c">
+        <div class="btn-music-nor closeMusic">关闭音乐</div>
+        <!--<div class="btn-music-nor closeDanmu">关闭弹幕</div>-->
+        <div class="btn-help-nor pleaseHelp">求助</div>
+    </div>
+</div>
+<!--我的奖品-->
+<div id="hd_ad_history_page_myPrize" class="dis-none">
+    <div class="hd_ad_hd pad-t-1">
+        <div class="hd_ad_back dis-inline w-percent-100 t-align-l">
+            <img src="zpSrc/img/close.png" class="h-2 dis-inline pad-l-half close">
+            <span class="dis-inline h-1-half dis-inline w-percent-45 t-align-r font-big" style="color: #000">我的奖品</span>
+            <a href="./getPrize.html"><span style="color:#000;" class="dis-inline pad-l-4">提取</span></a>
+        </div>
+    </div>
+    <div class="pad-t-half pad-l-half pad-r-half">
+        <div class="myPrize_list" style="background-color: #fff;height:24rem;overflow: auto;"></div>
+    </div>
+</div>
+<!--抓取记录-->
+<div id="hd_ad_history_page_getRecord" class="dis-none">
+    <div class="hd_ad_hd w-percent-100 t-align-l h-3 pad-t-half">
+        <div class="hd_ad_back dis-inline h-2 line-h-3 v-align-m w-percent-100 t-align-l">
+            <img src="zpSrc/img/close.png" class="h-2 w-2">
+        </div>
+        <div style="color: #000;height: 2rem;"
+             class="dis-inline font-wei w-percent-100 t-align-c h-2 line-h-2 v-align-m">
+            <span class="font-big">我的抓取记录</span>
+        </div>
+    </div>
+    <div class="pad-t-half pad-l-half pad-r-half" style="background-color: #FDEC02;">
+        <div class="catch_list t-align-c toScroll" style="overflow: auto;height: 26rem;"></div>
+    </div>
+</div>
+<!--娃娃信息-->
+<div id="hd_ad_history_page_productInformation" class="dis-none">
+    <div class="hd_ad_hd w-percent-100 t-align-l h-3 pad-t-half">
+        <div class="hd_ad_back dis-inline h-2 line-h-3 v-align-m w-percent-100 t-align-l">
+            <img src="zpSrc/img/close.png" class="h-2 w-2">
+        </div>
+        <div style="width:100%;text-align:center;color: #000;height: 2rem;line-height: 2rem;vertical-align: middle"
+             class="dis-inline font-wei">
+            <span class="font-big">房间详情</span>
+        </div>
+    </div>
+    <div class="t-align-c  pad-l-half pad-r-half" style="background-color: #FDEC02">
+        <div class="t-align-c" style="background-color: #fff;height: 2.5rem; line-height: 2.5rem;vertical-align: top;">
+            <span class="record dis-inline color-red w-percent-45" style="font-size: 0.7rem;">最近抓中的记录</span>
+            <span class="wawa dis-inline w-percent-45" style="font-size: 0.7rem;">娃娃详情</span>
+        </div>
+    </div>
+    <div id="latest" class="productList pad-l-half pad-r-half w-percent-100"
+         style="background-color: #FDEC02;height: 24rem;overflow: auto;">
+    </div>
+    <div id="Detail" class="productList pad-l-half pad-r-half w-percent-100 dis-none" style="background-color: #FDEC02">
+        <img src="" alt="" class="w-percent-100">
+    </div>
+</div>
+<div>
+</div>
+<!--各种弹窗-->
+<div id="nojbPopup" style="display: none">
+    <div class="nojb-popup1">
+        <div class="nojb-popup-img"><i class="close-popup-btn"></i></div>
+    </div>
+    <div class="nojb-popup2">
+            <span class="nojb-popup-write">
+                <span>扎心了，金币不足</span><br><span>快速充值~</span>
+            </span>
+        <button class="nojb-popup-btn">前往充值<span>(</span><span class="countNum">5</span><span>s)</span></button>
+    </div>
+</div>
+<div id="failPopup">
+    <div class="fail-popup1">
+        <div class="fail-popup-img">
+            <i class="close-popup-btn"></i>
+            <i class="failChicken"></i>
+        </div>
+    </div>
+    <div class="fail-popup2">
+            <span class="fail-popup-write">
+                <span>好可惜喔，就差一点点</span><br><span>继续游戏，也许下次就能抓中哦!</span>
+            </span>
+        <button class="fail-popup-btn">不服再战<span>(</span><span class="countNum">5</span><span>s)</span></button>
+    </div>
+</div>
+<div id="successPopup" style="display: none;">
+    <div class="success-popup1">
+        <div class="success-popup-img"><i class="close-popup-btn"></i></div>
+    </div>
+    <div class="success-popup2">
+            <span class="success-popup-write">
+                <span>恭喜您抽中啦</span><br><span></span>
+            </span>
+        <button class="success-popup-btn" style="background-color: #FF7460;">领取奖品</button>
+        <button class="success-popup-btn" style="background-color: #975429;margin-left: 0.5rem">乘胜追击<span>(</span><span
+                class="countNum">5</span><span>s)</span></button>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="zpSrc/index.js"></script>
+<script type="text/javascript" src="zpSrc/history.js"></script>
+<script type="text/javascript" src="zpSrc/crypt.js"></script>
+<script type="text/javascript" src="zpSrc/jsmpeg.min.js"></script>
+<script>
+  var url = window.location.href.split('#')[0];
+  $.post('http://42.121.115.167:8662/wawa_cms/eventNotice/getWxConfig.do',{url: url},function (data) {
+      var res = JSON.parse(data);
+      console.log('成功后', res);
+      wx.config({
+        debug: false,
+        appId: res.appId,
+        timeStamp: res.timestamp.toString(),
+        nonceStr: res.nonceStr,
+        signature: res.signature,
+        jsApiList: ['chooseWXPay']
+      });
+      $(document).on('click','.btnMoney',function (e) {
+        var token = JSON.parse(window.localStorage.getItem('token'));
+        var goodsId = e.currentTarget.dataset.id;
+        var json = {'customerId':token.customerId,
+          'goodsType':1,//1代表充值
+          'goodsId':goodsId//编号
+        };
+        var str = encryptByDES(JSON.stringify(json));
+        $.post(''+EnviromentUrl+'/jsapiPay',{json: str},function (res) {
+            var list = JSON.parse(decryptByDES(res));
+            console.log('充值列表',list);//充值列表
+            var payDetail = list.data;
+            if(list.state === 'ok'){
+              wx.ready(function() {
+                wx.chooseWXPay({
+                  appId: payDetail.jsApiParams.appId,
+                  timestamp: payDetail.jsApiParams.timeStamp,
+                  timeStamp: payDetail.jsApiParams.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                  nonceStr: payDetail.jsApiParams.nonceStr, // 支付签名随机串，不长于 32 位
+                  package: payDetail.jsApiParams.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                  signType: payDetail.jsApiParams.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                  paySign: payDetail.jsApiParams.paySign, // 支付签名
+                  success: function (res) {
+                    // 支付成功后的回调函数
+                    console.log('支付后', res);
+                  }
+                });
+              })
+            }
+          });
+      });
+  })
+</script>
+<script>
+  //  播放器
+//  var canvas = document.getElementById('video-canvas');
+  //        var url = dataChange[0].lvbList[0].playHlsUrl;
+//  var url = 'ws://192.168.31.10:8082';
+//  var player = new JSMpeg.Player(url, {canvas: canvas});
+</script>
+<script>
+  //    主页默认开始
+  $(function () {
+    window.addEventListener("popstate", function () {
+      window.location.href = location.href;
+    });
+    var json = {};
+    json.currentPage = 1;
+    var str = encryptByDES(JSON.stringify(json));
+    var socket = null;
+    var token = JSON.parse(window.localStorage.getItem('token'));
+    $.post('http://wawatest.daniuyx.com/wawa/api/wawajiList',{json: str},function (res) {
+        var list = JSON.parse(decryptByDES(res));
+        console.log('全部的娃娃机', list);//娃娃列表
+        var dataChange = list.data;
+        window.localStorage.setItem('wawajiList', JSON.stringify(dataChange));
+        console.log('默认的第一个娃娃机', dataChange[0]);
+        $('.sellCoin').text(dataChange[0].sellCoin);
+        $('#Detail img').attr('src', dataChange[0].lenImg);
+        var playerUrl = dataChange[0].lvbList[0].playHlsUrl;
+        var player = new TcPlayer('id_test_video', {
+        "m3u8":playerUrl, //请替换成实际可用的播放地址
+        "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+//    "coverpic" : "http://www.test.com/myimage.jpg",
+        "systemFullscreen":true,
+        "flash":true,
+        "showLoading":true,
+        "controls":"none",
+        "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
+        "height" : '400'//视频的显示高度，请尽量使用视频分辨率高度
+      });
+//              切换视角
+      $('#camera').click(function () {
+        if (playerUrl === dataChange[0].lvbList[0].playHlsUrl) {
+          $('.vcp-player').remove();
+          playerUrl = dataChange[0].lvbList[1].playHlsUrl;
+          var player = new TcPlayer('id_test_video', {
+            "m3u8":playerUrl, //请替换成实际可用的播放地址
+            "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+//    "coverpic" : "http://www.test.com/myimage.jpg",
+            "systemFullscreen":true,
+            "flash":true,
+            "showLoading":true,
+            "controls":"none",
+            "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
+            "height" : '400'//视频的显示高度，请尽量使用视频分辨率高度
+          });
+        }else if (playerUrl === dataChange[0].lvbList[1].playHlsUrl) {
+          playerUrl = dataChange[0].lvbList[0].playHlsUrl;
+          $('.vcp-player').remove();
+          var player = new TcPlayer('id_test_video', {
+            "m3u8":playerUrl, //请替换成实际可用的播放地址
+            "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+//    "coverpic" : "http://www.test.com/myimage.jpg",
+            "systemFullscreen":true,
+            "flash":true,
+            "showLoading":true,
+            "controls":"none",
+            "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
+            "height" : '400'//视频的显示高度，请尽量使用视频分辨率高度
+          });
+        }
+      });
+        socket = io.connect('http://115.29.225.91:9092?customerId=' + token.customerId + '&' + 'wawajiId=' + dataChange[0].wawajiId + '&' + 'mac=' + dataChange[0].mac);
+//      娃娃机状态
+        socket.on('wawaji_state', function (data) {
+          console.log('娃娃机状态', data);
+          if (data !== 1) {
+            $('#toStartGame').attr('disabled', 'disabled').css('background-color', '#999');
+          }
+        });
+//      娃娃机房间人数
+        socket.on('wawaji_customer', function (data) {
+          console.log('房间人数', data);
+        });
+//      当前游戏用户
+        socket.on('game_customer', function (data) {
+          console.log('当前游戏的用户', data);
+        });
+        //娃娃详情
+        $('.productInformation').on('click', function () {
+          var json = {"goodsId": dataChange[0].goodsId, "wawajiId": dataChange[0].wawajiId};
+          var str = encryptByDES(JSON.stringify(json));
+          $.post('http://wawatest.daniuyx.com/wawa/api/getSucGrabRecord',{json: str},function () {
+              var list = JSON.parse(decryptByDES(res));
+              console.log('当前直播间详情', list);//娃娃详情列表
+              var dataProduct = list.data;
+              $.each(dataProduct, function (i, obj) {
+                $('<div class="hd_ad_list w-percent-100 h-4 line-h-4 v-align-t">' +
+                  '<div class="h-4 w-percent-100" style="background-color: #ffffff;">' +
+                  '<div class="dis-inline pad-l-1 h-3 v-align-m w" style="line-height: 2.6rem;width:20%;"><img src="' + obj.headUrl + '" alt="" style="height:2.5rem;"></div>' +
+                  '<span class="dis-inline pad-l-half line-h-2 h-3 v-align-t t-align-l w-percent-45" style="margin-left:0.5rem;">' +
+                  '<span class="dis-inline font-21 font-wei line-h-3 v-align-t" style="height: 1.5rem;color:#666;">' + obj.nickName + '</span>' + '<br>' + '<span class="dis-inline v-align-t" style="color: #999;height: 1.5rem;line-height: 1.2rem;font-size: 0.6rem;">' + obj.createDate + '</span>' + '' +
+                  '</span>' +
+                  '<div class="dis-inline" style="text-align: right;width:25%">'+
+                  '<div class="dis-inline pad-l-1 t-align-r h-3 v-align-m" style="line-height: 2.6rem;"><a href="' + obj.videoUrl + '"><img src="zpSrc/img/mov.png" alt="" style="height:1.4rem;"></a></div>' +
+                  '</div>' + '</div>').appendTo($('#latest'));
+              });
+            });
+        });
+        //点击开始游戏
+        $('#toStartGame').on('click', function () {
+          console.log(123456);
+          var token = JSON.parse(window.localStorage.getItem('token'));
+          if(JSON.parse(window.localStorage.getItem('isChoose')) === 222){return}
+          var json = {"customerId": token.customerId, "mac": dataChange[0].mac, "wawajiId": dataChange[0].wawajiId};
+          var str = encryptByDES(JSON.stringify(json));
+          $.post('http://wawatest.daniuyx.com/wawa/api/startGame', {json: str}, function (res) {
+              var list = JSON.parse(decryptByDES(res));
+              console.log('开始后的信息', list);
+              if (list.state === 'ok') {
+                history.pushState({}, '', '?222');//历史记录栈
+                $('#main').addClass('dis-none');
+                $('#operate').removeClass('dis-none');
+                $('#glass').addClass('dis-none');
+                $('#count').removeClass('dis-none');
+                var num = parseInt($('#count').find('.countNum').text());
+                function countDown() {
+                  num--;
+                  $('#count').find('.countNum').text(num);
+                  if (num == 0) {
+                    $('#count').addClass('dis-none');
+                    socket.emit('move', 5);
+                    socket.on('game_state', function (data) {
+                      console.log('游戏结果', data);
+                      if (data === 0) {
+                        alert('等待游戏结果');
+                      }
+                      if (data === 1) {
+                        $('#successPopup').slideDown(100);
+                        countSuccess();
+                      }
+                      if (data === 2) {
+                        $('#failPopup').slideDown(100);
+                        countFail();
+                      }
+                    });
+                    return;
+                  }
+                  setTimeout(countDown, 1000);
+                }
+                countDown();
+                <!--按钮组-->
+                $('.upBtn').on('click', function () {
+                  socket.emit('move', 3);
+                  $(this).removeClass('upNor').addClass('upPressed');
+                  setTimeout(function () {
+                    $('.upBtn').removeClass('upPressed').addClass('upNor');
+                  }, 200);
+                });
+                $('.leftBtn').on('click', function () {
+                  socket.emit('move', 1);
+                  $(this).removeClass('leftNor').addClass('leftPressed');
+                  setTimeout(function () {
+                    $('.leftBtn').removeClass('leftPressed').addClass('leftNor');
+                  }, 200);
+                });
+                $('.rightBtn').on('click', function () {
+                  socket.emit('move', 2);
+                  $(this).removeClass('rightNor').addClass('rightPressed');
+                  setTimeout(function () {
+                    $('.rightBtn').removeClass('rightPressed').addClass('rightNor');
+                  }, 200);
+                });
+                $('.downBtn').on('click', function () {
+                  socket.emit('move', 4);
+                  $(this).removeClass('downNor').addClass('downPressed');
+                  setTimeout(function () {
+                    $('.downBtn').removeClass('downPressed').addClass('downNor');
+                  }, 200);
+                });
+                $('.confirmBtn').on('click', function () {
+                  socket.emit('move', 5);
+                  $(this).removeClass('startNor').addClass('startPressed');
+                  socket.on('game_state', function (data) {
+                    console.log('游戏结果', data);
+                    if (data == 0) {
+                      alert('等待游戏结果')
+                    }
+                    ;
+                    if (data == 1) {
+                      $('#successPopup').slideDown(100);
+                      function countSuccess() {
+                        var num = parseInt($('.success-popup-btn .countNum').text());
+                        num--;
+                        $('.success-popup-btn .countNum').text(num);
+                        if (num == 0) {
+//                        clearTimeout(t);
+                          $('#successPopup').slideUp(100);
+                          $('.confirmBtn').attr('disabled', 'disabled');
+                          return
+                        }
+                        setTimeout(countSuccess, 1000);
+                      }
+
+                      countSuccess();
+                    }
+                    if (data == 2) {
+                      $('#failPopup').slideDown(100);
+                      function countFail() {
+                        var num = parseInt($('.fail-popup-btn .countNum').text());
+                        num--;
+                        $('.fail-popup-btn .countNum').text(num);
+                        if (num == 0) {
+//                        clearTimeout(t);
+                          $('#failPopup').slideUp(100);
+                          $('.confirmBtn').attr('disabled', 'disabled');
+                          return
+                        }
+                        setTimeout(countFail, 1000);
+                      }
+
+                      countFail();
+                    }
+                  });
+                });
+              } else {
+                alert(list.msg);
+              }
+              if (list.msg === '金币不足') {
+                $('#nojbPopup').slideDown(100);
+                countNoJb();
+              }
+            })
+        });
+      //换一批娃娃接口
+      $('.change').on('click',function () {
+        $('#hd_ad_history_page_change').slideDown(100);
+        var json = {};
+        json.currentPage = 1;
+        var str = encryptByDES(JSON.stringify(json));
+        $.post('http://wawatest.daniuyx.com/wawa/api/wawajiList', {json: str}, function (res) {
+            $('.myRecord').remove();
+            var list = JSON.parse(decryptByDES(res));
+            console.log(list);//娃娃列表
+            var dataChange = list.data;
+            $.each(dataChange, function (i, obj) {
+              obj.state === 1 ? obj.state = '空闲' : obj.state = '游戏中';
+              $('<div class="myRecord dis-inline w-percent-48" style="background-color: #fff;margin-left: 0.25rem;">' +
+                '<div class="dis-inline position-r t-align-c v-align-t line-h-7 w-percent-100 h-9 imgStart">' +
+                '<div class="pad-l-half pad-t-half pad-r-half w-8 h-6-half line-h-4 v-align-t"><img src="' + obj.goodsImg + '" class="w-7 h-6"></div>' +
+                '<div class="font-14 w-6 h-1 line-h-1 v-align-t" style="width:100%;"><span class="font-21">' + obj.goodsName + '</span></div>' +
+                '<div class="h-1 line-h-1 v-align-t t-align-l pad-l-1"><span class="font-14 dis-inline w-3 h-1 line-h-1 v-align-t" style="color: #FEA194">' + obj.sellCoin + '/次</span><span class="font-14 dis-inline w-3 h-1 line-h-1 v-align-t t-align-r"><span class="dis-inline gameStatusNo" style="margin-top: 0.25rem;margin-right:0.2rem;"></span><span class="font-14">' + obj.state + '</span></span></div>' +
+                '</div>' +
+                '</div>').appendTo($('.change_list'))
+            });
+//            选择开始
+            $('.imgStart').on('click', function () {
+              $('.vcp-player').remove();
+              var token = JSON.parse(window.localStorage.getItem('token'));
+              window.localStorage.setItem('isChoose', JSON.stringify(222));
+              socket.close();
+              $('#hd_ad_history_page_change').slideUp(100);
+              var wawaIndex = $($(this).parent()).index();
+              var allWawa = JSON.parse(window.localStorage.getItem('wawajiList'));
+              $('.sellCoin').text(allWawa[wawaIndex].sellCoin);
+              $('#Detail img').attr('src', allWawa[wawaIndex].lenImg);
+//                var canvas = document.getElementById('video-canvas');
+//                var url = 'ws://192.168.31.157:8082/';
+//                var player = new JSMpeg.Player(url, {canvas: canvas});
+              var ChoosePlayerUrl = allWawa[wawaIndex].lvbList[0].playHlsUrl;
+              var player = new TcPlayer('id_test_video', {
+                "m3u8": ChoosePlayerUrl, //请替换成实际可用的播放地址
+                "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+//    "coverpic" : "http://www.test.com/myimage.jpg",
+                "controls":"none",
+                "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
+                "height" : '400'//视频的显示高度，请尽量使用视频分辨率高度
+              });
+              //        切换视角
+              $('#camera').click(function () {
+                if (ChoosePlayerUrl === allWawa[wawaIndex].lvbList[0].playHlsUrl) {
+                  $('.vcp-player').remove();
+                  ChoosePlayerUrl = allWawa[wawaIndex].lvbList[1].playHlsUrl;
+                  var player = new TcPlayer('id_test_video', {
+                    "m3u8":ChoosePlayerUrl, //请替换成实际可用的播放地址
+                    "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+//    "coverpic" : "http://www.test.com/myimage.jpg",
+                    "systemFullscreen":true,
+                    "flash":true,
+                    "showLoading":true,
+                    "controls":"none",
+                    "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
+                    "height" : '400'//视频的显示高度，请尽量使用视频分辨率高度
+                  });
+                }else if (ChoosePlayerUrl === allWawa[wawaIndex].lvbList[1].playHlsUrl) {
+                  ChoosePlayerUrl = allWawa[wawaIndex].lvbList[0].playHlsUrl;
+                  $('.vcp-player').remove();
+                  var player = new TcPlayer('id_test_video', {
+                    "m3u8":ChoosePlayerUrl, //请替换成实际可用的播放地址
+                    "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+//    "coverpic" : "http://www.test.com/myimage.jpg",
+                    "systemFullscreen":true,
+                    "flash":true,
+                    "showLoading":true,
+                    "controls":"none",
+                    "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
+                    "height" : '400'//视频的显示高度，请尽量使用视频分辨率高度
+                  });
+                }
+              });
+              socket = io.connect('http://115.29.225.91:9092?customerId=' + token.customerId + '&' + 'wawajiId=' + allWawa[wawaIndex].wawajiId + '&' + 'mac=' + allWawa[wawaIndex].mac);
+//      娃娃机状态
+              socket.on('wawaji_state', function (data) {
+                console.log('娃娃机状态', data);
+              });
+//      娃娃机房间人数
+              socket.on('wawaji_customer', function (data) {
+                console.log('房间人数', data);
+              });
+//      当前游戏用户
+              socket.on('game_customer', function (data) {
+                console.log('当前游戏的用户', data);
+              });
+//      弹幕
+              socket.on('danmu', function (data) {
+                console.log('弹幕', data);
+              });
+              //娃娃详情
+              $('.productInformation').on('click', function () {
+                var json = {"goodsId": allWawa[wawaIndex].goodsId, "wawajiId": allWawa[wawaIndex].wawajiId};
+                var str = encryptByDES(JSON.stringify(json));
+                $.post('http://wawatest.daniuyx.com/wawa/api/getSucGrabRecord', {json: str}, function (res) {
+                    var list = JSON.parse(decryptByDES(res));
+                    console.log('当前直播间详情', list);//娃娃详情列表
+                    var dataProduct = list.data;
+                    $.each(dataProduct, function (i, obj) {
+                      $('<div class="hd_ad_list" style="width:100%;height:4rem;line-height: 4rem;vertical-align: top">' +
+                        '<div style="background-color: #ffffff;height:4rem;width:100%;">' +
+                        '<div class="dis-inline pad-l-1" style="height: 3rem;vertical-align: middle;line-height: 2.6rem;width:20%;"><img src="' + obj.headUrl + '" alt="" style="height:2.5rem;"></div>' +
+                        '<span class="dis-inline pad-l-half" style="margin-left:0.5rem;width:45%;line-height: 2rem;height:3rem;vertical-align: top;text-align: left">' +
+                        '<span class="dis-inline font-21 font-wei" style="height: 1.5rem;line-height: 3rem;vertical-align: top;color:#666;">' + obj.nickName + '</span>' + '<br>' + '<span class="dis-inline" style="color: #999;height: 1.5rem;line-height: 1.2rem;vertical-align: top;font-size: 0.6rem;">' + obj.createDate + '</span>' + '' +
+                        '</span>' +
+                        '<div class="dis-inline" style="text-align: right;width:25%">' +
+                        '<div style="text-align: right;height: 3rem;vertical-align: middle;line-height: 2.6rem;" class="dis-inline pad-l-1"><a href="' + obj.videoUrl + '"><img src="zpSrc/img/mov.png" alt="" style="height:1.4rem;"></a></div>' +
+                        '</div>' + '</div>').appendTo($('#latest'));
+                    });
+                  }
+                );
+              });
+              //点击开始游戏
+              $('#toStartGame').on('click', function () {
+                var token = JSON.parse(window.localStorage.getItem('token'));
+                if (JSON.parse(window.localStorage.getItem('isChoose')) === 222) {
+                  window.localStorage.removeItem('isChoose');
+                  var json = {
+                    "customerId": token.customerId,
+                    "mac": allWawa[wawaIndex].mac,
+                    "wawajiId": allWawa[wawaIndex].wawajiId
+                  };
+                  var str = encryptByDES(JSON.stringify(json));
+                  $.post('http://wawatest.daniuyx.com/wawa/api/startGame', {json: str}, function (res) {
+                      var list = JSON.parse(decryptByDES(res));
+                      console.log('开始后的信息', list);
+                      if (list.state === 'ok') {
+                        history.pushState({}, '', '?222');
+                        $('#main').addClass('dis-none');
+                        $('#operate').removeClass('dis-none');
+                        $('#glass').addClass('dis-none');
+                        $('#count').removeClass('dis-none');
+                        var num = parseInt($('#count').find('.countNum').text());
+                        function countDown() {
+                          num--;
+                          $('#count').find('.countNum').text(num);
+                          if (num == 0) {
+                            $('#count').addClass('dis-none');
+                            socket.emit('move', 5);
+                            socket.on('game_state', function (data) {
+                              console.log('游戏结果', data);
+                              if (data === 0) {
+                                alert('等待游戏结果')
+                              }
+                              if (data === 1) {
+                                $('#successPopup').slideDown(100);
+                                countSuccess();
+                              }
+                              if (data === 2) {
+                                $('#failPopup').slideDown(100);
+                                countFail();
+                              }
+                            })
+                          }
+                          setTimeout(countDown, 1000);
+                        }
+                        countDown();
+                        <!--按钮组-->
+                        $('.upBtn').on('click', function () {
+                          socket.emit('move', 3);
+                          $(this).removeClass('upNor').addClass('upPressed');
+                          setTimeout(function () {
+                            $('.upBtn').removeClass('upPressed').addClass('upNor');
+                          }, 200);
+                        });
+                        $('.leftBtn').on('click', function () {
+                          socket.emit('move', 1);
+                          $(this).removeClass('leftNor').addClass('leftPressed');
+                          setTimeout(function () {
+                            $('.leftBtn').removeClass('leftPressed').addClass('leftNor');
+                          }, 200);
+                        });
+                        $('.rightBtn').on('click', function () {
+                          socket.emit('move', 2);
+                          $(this).removeClass('rightNor').addClass('rightPressed');
+                          setTimeout(function () {
+                            $('.rightBtn').removeClass('rightPressed').addClass('rightNor');
+                          }, 200);
+                        });
+                        $('.downBtn').on('click', function () {
+                          socket.emit('move', 4);
+                          $(this).removeClass('downNor').addClass('downPressed');
+                          setTimeout(function () {
+                            $('.downBtn').removeClass('downPressed').addClass('downNor');
+                          }, 200);
+                        });
+                        $('.confirmBtn').on('click', function () {
+                          socket.emit('move', 5);
+                          $(this).removeClass('startNor').addClass('startPressed');
+                          socket.on('game_state', function (data) {
+                            console.log('游戏结果', data);
+                            if (data === 0) {
+                              alert('等待游戏结果')
+                            }
+                            if (data === 1) {
+                              $('#successPopup').slideDown(100);
+                              countSuccess();
+                            }
+                            if (data == 2) {
+                              $('#failPopup').slideDown(100);
+                              countFail();
+                            }
+                          });
+                        });
+                      } else {
+                        alert(list.msg);
+                      }
+                      if (list.msg === '金币不足') {
+                        $('#nojbPopup').slideDown(100);
+                        countNoJb();
+                      }
+                    }
+                  )
+                }
+              });
+            });
+          }
+        );
+      });
+    });
+//    顶部遮罩下载
+    $('#toDown').click(function () {
+      window.location.href = 'http://alicdn.doumob.com/cps/wawa_share.apk';
+    });
+    <!--娃娃信息tab切换-->
+    $('.record').on('click', function () {
+      $('#Detail').addClass('dis-none');
+      $('#latest').removeClass('dis-none');
+      $('.wawa').removeClass('color-red');
+      $('.record').addClass('color-red');
+    });
+    $('.wawa').on('click', function () {
+      $('#Detail').removeClass('dis-none');
+      $('#latest').addClass('dis-none');
+      $('.record').removeClass('color-red');
+      $('.wawa').addClass('color-red');
+    });
+  });
+//    封装公共方法
+//  无金币
+  function countNoJb() {
+    var num = parseInt($('.nojb-popup-btn .countNum').text());
+    num--;
+    $('.nojb-popup-btn .countNum').text(num);
+    if (num == 0) {
+      $('#nojbPopup').slideUp(100);
+      $('.confirmBtn').attr('disabled', 'disabled');
+      return
+    }
+    setTimeout(countNoJb, 1000);
+  }
+//  失败
+  function countFail() {
+    var num = parseInt($('.fail-popup-btn .countNum').text());
+    num--;
+    $('.fail-popup-btn .countNum').text(num);
+    if (num == 0) {
+      $('#failPopup').slideUp(100);
+      $('.confirmBtn').attr('disabled', 'disabled');
+      return;
+    }
+    setTimeout(countFail, 1000);
+  }
+//  成功
+  function countSuccess() {
+    var num = parseInt($('.success-popup-btn .countNum').text());
+    num--;
+    $('.success-popup-btn .countNum').text(num);
+    if (num == 0) {
+      $('#successPopup').slideUp(100);
+      $('.confirmBtn').attr('disabled', 'disabled');
+      return
+    }
+    setTimeout(countSuccess, 1000);
+  }
+</script>
+</html>
+
