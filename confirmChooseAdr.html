@@ -109,7 +109,7 @@
             '</div>'+
             '</div>'+
             '</div>'+
-            '<div class="line-btn-delete"><button>删除</button></div>'+
+            '<div class="line-btn-delete"><button id="deleteAdr" onclick="" data-idd="' + obj.expressAddressId + '">删除</button></div>'+
               '</div>').appendTo('#addList');
           });
 //          $.each(addList, function (i, obj) {
@@ -127,7 +127,7 @@
             var mobile = $(this).find('.mobile').html();
             var addr = $(this).find('.addr').html();
             var area = $(this).find('.area').html();
-            window.location.href = '../wawagame/confirmFirst.html?expressAddressId=' + e.currentTarget.dataset.id;
+            window.location.href = './confirmFirst.html?expressAddressId=' + e.currentTarget.dataset.id;
             window.localStorage.setItem('chooseAdr', JSON.stringify({
               'name': name,
               'mobile': mobile,
@@ -231,6 +231,20 @@
               });
             }
           });
+//          删除一条
+        $('#deleteAdr').click(function (e) {
+            e.stopPropagation();
+//            console.log(e.currentTarget.dataset.idd);
+          var json = {"addressId":e.currentTarget.dataset.idd,};
+          //   加密转化成json字符串
+          var str = encryptByDES(JSON.stringify(json));
+          //      请求
+          $.post('http://wawatest.daniuyx.com/wawa/api/deleteExpressAddress',{json: str},function (res) {
+            console.log(JSON.parse(decryptByDES(res)));
+            var list = JSON.parse(decryptByDES(res));//{data: true, state: "ok"}
+            if(list.state === 'ok'){$($(this).parent().parent().parent()).remove();}
+          });
+        });
 //          选择一个区编辑(事件冒泡)
           $('.toEdit').on('click', function (e) {
             e.stopPropagation();

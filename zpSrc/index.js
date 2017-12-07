@@ -1,17 +1,6 @@
 // /**
 //  * Created by Administrator on 2017/11/1.
 //  */
-window.onload = function () {
-  <!-- 音乐 -->
-  $('<audio id="music" loop="loop" autoplay="autoplay">'+
-      '<source src="zpSrc/music.mp3" type="audio/mpeg">'+
-    '</audio>').appendTo('body');
-  var audio = document.getElementById('music');
-    audio.play();
-  // $.get('https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxebb0b63659894e46&redirect_uri=http%3A%2F%2Fdaniu.doumob.cn%2Fwawalocalhost&response_type=code&scope=snsapi_userinfo&state=OPENID#wechat_redirect',function (data) {
-  //   console.log('登录判断',data);
-  // })
-};
 // 接口数据加密解密
 function encryptByDES(message) {
   var key = "V29n8rqY38b7HMXBcYfu09K0";
@@ -35,7 +24,6 @@ function decryptByDES(ciphertext) {
   });
   return decrypted.toString(CryptoJS.enc.Utf8);
 }
-
 //获取配置信息（充值的金币活动等）
 var json = {"customerId": ''};
 var str = encryptByDES(JSON.stringify(json));
@@ -62,6 +50,7 @@ $(document).ready(function () {
 });
 //充值
 $('.chongzhi').click(function () {
+  $('#hd_ad_history_page_shezhi').slideUp(100);
   var config = JSON.parse(window.localStorage.getItem('config'));
   $.each(config.rechargeCoinList,function (i,obj) {
     $('<div class="moneyList pad-l-half pad-r-half w-percent-100">'+
@@ -83,16 +72,23 @@ $('.chongzhi').click(function () {
 });
 //设置
 $('.closeMusic').click(function () {
+  // $('#id_test_video').css('height','1px');
   $(this).toggleClass('btn-music-pressed');
-  $(this).hasClass('btn-music-pressed')?document.getElementById('music').pause():document.getElementById('music').play();
+  if($(this).hasClass('btn-music-pressed')){
+    document.getElementById('music').pause();
+    $(this).text('打开音乐');
+  } else{
+    document.getElementById('music').play();
+    $(this).text('关闭音乐');
+  }
 });
 $('.pleaseHelp').click(function () {
-  $(this).toggleClass('btn-help-pressed');
+  // $(this).toggleClass('btn-help-pressed');
   window.location.href = 'http://m.doumob.com/wawadoc/help';
 });
 //我的奖品
 $('.myPrize').on('click',function () {
-  console.log(123);
+  $('#hd_ad_history_page_shezhi').slideUp(100);
   $('#hd_ad_history_page_myPrize').slideDown(100);
   var token = JSON.parse(window.localStorage.getItem('token'));
   var json = {"customerId":token.customerId,"currentPage":1};
@@ -100,8 +96,19 @@ $('.myPrize').on('click',function () {
   $.post('http://wawatest.daniuyx.com/wawa/api/getPrizeExtractList',{json: str},function (res) {
       $('.myRecord').remove();
       var list = JSON.parse(decryptByDES(res));
-      console.log(list);//
       var dataMyPrize = list.data;
+      if(dataMyPrize.length === 0){$('.myPrize_list').addClass('list_none')}else{$('.myPrize_list').removeClass('list_none')}
+      for(var i=0,flag = 0;i<dataMyPrize.length;i++) {
+        if (dataMyPrize[i].extractStatus === '未提取' || dataMyPrize[i].extractStatus === 0) {
+          flag+=1;
+        }
+      }
+      //去提取
+      $('#toGetww').click(function (e) {
+      e.preventDefault();
+      if(flag === 0){alert('您还没有奖品哦~快去抓吧')}
+      else{window.location.href = './getPrize.html'}
+    });
       $.each(dataMyPrize,function (i,obj) {
         obj.extractStatus === 0?obj.extractStatus = '未提取':obj.extractStatus = '已提取';
         $('<div class="myRecord dis-inline pad-l-1" style="width:48%;margin-top: 0.5rem;">'+
@@ -111,7 +118,7 @@ $('.myPrize').on('click',function () {
           '<div style="width:6.5rem;height:1rem;line-height: 1rem;vertical-align: top;text-align: right;padding-right: 1rem;"><a href="'+obj.videoUrl+'"><img src="zpSrc/img/mov.png" alt="" style="width:1rem;height: 1rem;"></a></div>'+
           '</div>'+
           '<div class="pad-l-half">'+
-          '<div><span class="font-20 font-wei dis-inline" style="color: #000;">'+obj.goodsName+'</span></div>'+
+          '<div class="t-ellipsis"><span class="font-20 font-wei dis-inline" style="color: #000;">'+obj.goodsName+'</span></div>'+
           '<div><span class="font-20 dis-inline" style="color: #666;width: 108%;">'+obj.createDate+'</span></div>'+
           '</div>'+
           '</div>').appendTo($('.myPrize_list'));
@@ -144,6 +151,7 @@ $('.getwawa').on('click',function () {
 });
 //抓取记录
 $('.getRecord').on('click',function () {
+  $('#hd_ad_history_page_shezhi').slideUp(100);
   $('#hd_ad_history_page_getRecord').slideDown(100);
   var token = JSON.parse(window.localStorage.getItem('token'));
   var json = {"customerId":token.customerId,"currentPage":1};
@@ -153,16 +161,17 @@ $('.getRecord').on('click',function () {
       var list = JSON.parse(decryptByDES(res));
       console.log(list);//抓取记录列表
       var dataCatch = list.data;
+    if(dataCatch.length === 0){$('.catch_list').addClass('list_none')}else{$('.catch_list').removeClass('list_none')}
       window.localStorage.setItem('allRecord',JSON.stringify(dataCatch));
       $.each(dataCatch,function (i,obj) {
         $('<div class="hd_ad_list w-percent-100 h-3">'+
           '<div class="theRecord" style="background-color: #ffffff;height:3rem;width:100%;">' +
           '<div class="dis-inline" style="text-align:left;width:15%;height: 3rem;vertical-align: middle;line-height: 3rem;"><img src="'+obj.img+'" alt="" style="height:2rem;"></div>' +
-          '<span class="dis-inline pad-l-half" style="width:45%;line-height: 2rem;height:3rem;vertical-align: top;text-align: left">' +
-          '<span class="dis-inline font-21 font-wei" style="height: 1.5rem;line-height: 2.2rem;vertical-align: top;color:#666;">'+obj.goodsName+'</span>' +'<br>'+'<span class="dis-inline" style="color: #999;height: 1.5rem;line-height: 0.8rem;vertical-align: top;font-size: 0.6rem;">'+obj.createDate+'</span>'+'' +
+          '<span class="dis-inline pad-l-half" style="width:60%;line-height: 2rem;height:3rem;vertical-align: top;text-align: left">' +
+          '<span class="dis-inline font-21 font-wei t-ellipsis" style="height: 1.5rem;line-height: 2.2rem;vertical-align: top;color:#666;">'+obj.goodsName+'</span>' +'<br>'+'<span class="dis-inline" style="color: #999;height: 1.5rem;line-height: 0.8rem;vertical-align: top;font-size: 0.6rem;">'+obj.createDate+'</span>'+'' +
           '</span>'+
-          '<div class="dis-inline" style="text-align: right;width:35%">' +
-          '<div style="height: 3rem;vertical-align: middle;line-height: 2.6rem;" class="dis-inline pad-l-1"><span style="color: #999;font-size: 0.6rem;">抓取娃娃失败</span></div>'+
+          '<div class="dis-inline" style="width:25%">' +
+          '<div style="text-align: left;height: 3rem;vertical-align: middle;line-height: 2.6rem;" class="dis-inline"><span style="color: #999;font-size: 0.6rem;">抓取娃娃失败</span></div>'+
           '</div>' +
           '</div>').appendTo($('.catch_list'));
       });

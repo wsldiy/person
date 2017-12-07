@@ -934,3 +934,15 @@ input[type="number"]::-webkit-outer-spin-button {
 .line-normal-left-wrapper {overflow: hidden;}
 .line-normal-user-name { height: 0.7rem; line-height: 0.7rem; color: #4e4e4e; margin-top: 7px; }
 .line-normal-msg {color: #4e4e4e; margin-top: 11px;}
+/*无记录的时候*/
+.list_none{
+    background-image: url(../zpSrc/img/icon_none.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: auto;
+}
+.t-ellipsis{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

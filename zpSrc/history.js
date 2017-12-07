@@ -270,7 +270,7 @@ var historyPage = (function($){
   //  设置
     $('.shezhi').on('click',function () {
       $('#hd_ad_history_page_shezhi').slideDown(100);
-    })
+    });
    // 我的奖品
     // $('.myPrize').on('click',function () {
     //   $('#hd_ad_history_page_myPrize').slideDown(100);
