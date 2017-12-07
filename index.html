@@ -64,8 +64,8 @@
 <!--&lt;!&ndash;<span class="font-22 font-wei w-4 h-4 color-w">加载中...</span>&ndash;&gt;-->
 <!--&lt;!&ndash;</div>&ndash;&gt;-->
 <!--下方遮罩玻璃-->
-<div id="glass" class="h-4" style="width:6rem;position: absolute;top:53%;left:65%;">
-    <span class="font-22 font-wei w-4 h-4 color-w nickName"></span><br>
+<div id="glass" class="h-4" style="width:6rem;position: absolute;top:55%;left:65%;">
+    <div class="t-ellipsis"><span class="font-22 font-wei w-4 h-4 color-w nickName"></span></div>
     <span class="font-22 font-wei w-4 h-4 color-w">本次：</span><span class="sellCoin color-w"></span><br>
     <span class="font-22 font-wei w-4 h-4 color-w">余额：</span><span class="balance color-w"></span>
 </div>
@@ -125,8 +125,8 @@
             <img src="zpSrc/img/close.png" class="h-2 w-2">
         </div>
         <div style="width:100%;text-align:center;color: #000;height: 2rem;line-height: 2rem;vertical-align: middle"
-             class="dis-inline font-wei pad-t-half">
-            <span class="font-big">充娃娃币</span>
+             class="dis-inline pad-t-half">
+            <span style="font-size: 1rem">充娃娃币</span>
         </div>
     </div>
     <div id="moneyChongZhi"></div>
@@ -151,7 +151,7 @@
 <div id="hd_ad_history_page_shezhi" class="dis-none">
     <div class="hd_ad_hd pad-t-half" style="border-radius: 1rem;">
         <div class="hd_ad_back h-2 v-align-t line-h-2"><img src="zpSrc/img/close.png" class="h-2 w-2"></div>
-        <p style="color:#000;" class="font-big font-wei line-h-2 v-align-t">设置</p>
+        <p style="color:#000;font-size: 1rem;" class="font-big line-h-2 v-align-t">设置</p>
     </div>
     <div class="t-align-c">
         <div class="btn-music-nor closeMusic">关闭音乐</div>
@@ -180,12 +180,12 @@
             <img src="zpSrc/img/close.png" class="h-2 w-2">
         </div>
         <div style="color: #000;height: 2rem;"
-             class="dis-inline font-wei w-percent-100 t-align-c h-2 line-h-2 v-align-m">
+             class="dis-inline w-percent-100 t-align-c h-2 line-h-2 v-align-m">
             <span class="font-big">我的抓取记录</span>
         </div>
     </div>
     <div class="pad-t-half pad-l-half pad-r-half" style="background-color: #FDEC02;padding-bottom: 1rem">
-        <div class="catch_list t-align-c toScroll" style="overflow: auto;height: 21rem;background-color: #fff;"></div>
+        <div class="catch_list t-align-c toScroll" style="overflow: auto;height: 21rem;background-color: #fff;padding-left: 0.3rem;padding-right: 0.3rem;"></div>
     </div>
 </div>
 <!--娃娃信息-->
@@ -195,7 +195,7 @@
             <img src="zpSrc/img/close.png" class="h-2 w-2">
         </div>
         <div style="width:100%;text-align:center;color: #000;height: 2rem;line-height: 2rem;vertical-align: middle"
-             class="dis-inline font-wei">
+             class="dis-inline">
             <span class="font-big">房间详情</span>
         </div>
     </div>
@@ -360,7 +360,8 @@
 //    window.addEventListener("popstate", function () {
 //      window.location.href = location.href;
 //    });
-    if(isAndroid){}else{}
+    if(isAndroid){$('#toDown').addClass('')}
+    if(isAndroid){$('#toDown').removeClass('')}else{$('#toDown').removeClass('')}
     var json = {};
     json.currentPage = 1;
     var str = encryptByDES(JSON.stringify(json));
@@ -444,6 +445,8 @@
         });
         //娃娃详情
         $('.productInformation').on('click', function () {
+          $('.vcp-player').css('height','200px');
+          $('.vcp-player').find('video').css('height','100%');
           var json = {"goodsId": dataChange[0].goodsId, "wawajiId": dataChange[0].wawajiId};
           var str = encryptByDES(JSON.stringify(json));
           $.post('http://wawatest.daniuyx.com/wawa/api/getSucGrabRecord',{json: str},function () {
@@ -598,6 +601,8 @@
       $('.change').on('click',function () {
         $('#hd_ad_history_page_shezhi').slideUp(100);
         $('#hd_ad_history_page_change').slideDown(100);
+        $('.vcp-player').css('height','200px');
+        $('.vcp-player').find('video').css('height','100%');
         var json = {};
         json.currentPage = 1;
         var str = encryptByDES(JSON.stringify(json));
@@ -612,7 +617,7 @@
                 '<div class="dis-inline position-r t-align-c v-align-t line-h-7 w-percent-100 h-9 imgStart">' +
                 '<div class="pad-l-half pad-t-half pad-r-half w-8 h-6-half line-h-4 v-align-t"><img src="' + obj.goodsImg + '" class="w-7 h-6"></div>' +
                 '<div class="font-14 w-6 h-1 line-h-1 v-align-t t-ellipsis t-align-l pad-l-half" style="width:100%;"><span class="font-21">' + obj.goodsName + '</span></div>' +
-                '<div class="h-1 line-h-1 v-align-t t-align-l pad-l-half" style="width:100%;"><span class="font-14 dis-inline w-percent-45 h-1 line-h-1 v-align-t" style="color: #FEA194">' + obj.sellCoin + '币/次</span><span class="font-14 dis-inline w-percent-45 h-1 line-h-1 v-align-t t-align-r"><span class="dis-inline gameStatu" style="margin-top: 0.25rem;margin-right:0.2rem;"></span><span class="font-14">' + obj.state + '</span></span></div>' +
+                '<div class="h-1 line-h-1 v-align-t t-align-l pad-l-half" style="width:100%;"><span class="dis-inline w-percent-45 h-1 line-h-1 v-align-t" style="color: #FEA194;font-size: 0.65rem;">' + obj.sellCoin + '币/次</span><span class="font-14 dis-inline w-percent-45 h-1 line-h-1 v-align-t t-align-r"><span class="dis-inline gameStatu" style="margin-top: 0.25rem;margin-right:0.2rem;"></span><span style="font-size: 0.65rem;">' + obj.state + '</span></span></div>' +
                 '</div>' +
                 '</div>').appendTo($('.change_list'));
               if(obj.state === '空闲'){$('.gameStatu').addClass('gameStatusNo').removeClass('gameStatus')}else{
@@ -697,6 +702,8 @@
               });
               //娃娃详情
               $('.productInformation').on('click', function () {
+                $('.vcp-player').css('height','200px');
+                $('.vcp-player').find('video').css('height','100%');
                 var json = {"goodsId": allWawa[wawaIndex].goodsId, "wawajiId": allWawa[wawaIndex].wawajiId};
                 var str = encryptByDES(JSON.stringify(json));
                 $.post('http://wawatest.daniuyx.com/wawa/api/getSucGrabRecord', {json: str}, function (res) {

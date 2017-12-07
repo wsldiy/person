@@ -51,6 +51,10 @@ $(document).ready(function () {
 //充值
 $('.chongzhi').click(function () {
   $('#hd_ad_history_page_shezhi').slideUp(100);
+  if(isAndroid) {
+    $('.vcp-player').css('height', '200px');
+    $('.vcp-player').find('video').css('height', '100%');
+  }
   var config = JSON.parse(window.localStorage.getItem('config'));
   $.each(config.rechargeCoinList,function (i,obj) {
     $('<div class="moneyList pad-l-half pad-r-half w-percent-100">'+
@@ -60,7 +64,7 @@ $('.chongzhi').click(function () {
       '<img src="zpSrc/img/icon_coin.png" class="h-1"></div>'+
       '<span class="dis-inline w-percent-50">'+
       '<span class="dis-inline pad-l-1 font-22 h-1-half line-h-2 v-align-t" style="color: #000;width: 70%;">'+obj.goodsTitle+'</span>'+
-    '<span class="dis-inline pad-l-1 font-20 w-percent-100 h-1-half line-h-1 v-align-t" style="color: #999;">'+obj.goodsMessage+'</span>'+
+    '<span class="dis-inline pad-l-1 w-percent-100 h-1-half line-h-1 v-align-t" style="color: #999;font-size: 0.7rem">'+obj.goodsMessage+'</span>'+
      '</span>'+
       '<div class="dis-inline w-percent-30 h-3 v-align-t line-h-3">'+
       '<button class="btnMoney" onclick="" data-id='+obj.goodsId+'>￥'+obj.price+'</button>'+
@@ -90,6 +94,10 @@ $('.pleaseHelp').click(function () {
 $('.myPrize').on('click',function () {
   $('#hd_ad_history_page_shezhi').slideUp(100);
   $('#hd_ad_history_page_myPrize').slideDown(100);
+  if(isAndroid) {
+    $('.vcp-player').css('height', '200px');
+    $('.vcp-player').find('video').css('height', '100%');
+  }
   var token = JSON.parse(window.localStorage.getItem('token'));
   var json = {"customerId":token.customerId,"currentPage":1};
   var str = encryptByDES(JSON.stringify(json));
@@ -113,13 +121,13 @@ $('.myPrize').on('click',function () {
         obj.extractStatus === 0?obj.extractStatus = '未提取':obj.extractStatus = '已提取';
         $('<div class="myRecord dis-inline pad-l-1" style="width:48%;margin-top: 0.5rem;">'+
           '<div class="dis-inline" style="position:relative;text-align:center;vertical-align: top;line-height: 7rem;width:98%;height: 7rem;border:2px solid #E1E1E1;">'+
-          '<div style="width:1rem;height:1rem;line-height: 4rem;vertical-align: top;"><span class="font-14" style="position: absolute;bottom:4.2rem;left:0.25rem;color: #ff9292">'+obj.extractStatus+'</span></div>'+
-          '<div style="width:6rem;height:4rem;line-height: 4rem;vertical-align: top;"><img src="'+obj.img+'" alt="" style="width:5rem;height:4rem;"></div>'+
-          '<div style="width:6.5rem;height:1rem;line-height: 1rem;vertical-align: top;text-align: right;padding-right: 1rem;"><a href="'+obj.videoUrl+'"><img src="zpSrc/img/mov.png" alt="" style="width:1rem;height: 1rem;"></a></div>'+
+          '<div style="width:1rem;height:1rem;line-height: 4rem;vertical-align: top;"><span style="position: absolute;bottom:4.2rem;left:0.25rem;color: #ff9292;font-size: 0.6rem">'+obj.extractStatus+'</span></div>'+
+          '<div style="width:7rem;height:4rem;line-height: 4rem;vertical-align: top;"><img src="'+obj.img+'" alt="" style="width:6rem;height:5rem;"></div>'+
+          '<div style="width:6.5rem;height:1rem;line-height: 1rem;vertical-align: top;text-align: right;"><a href="'+obj.videoUrl+'"><img src="zpSrc/img/mov.png" alt="" style="width:1rem;height: 1rem;"></a></div>'+
           '</div>'+
           '<div class="pad-l-half">'+
-          '<div class="t-ellipsis"><span class="font-20 font-wei dis-inline" style="color: #000;">'+obj.goodsName+'</span></div>'+
-          '<div><span class="font-20 dis-inline" style="color: #666;width: 108%;">'+obj.createDate+'</span></div>'+
+          '<div><span class="font-21 font-wei dis-inline t-ellipsis" style="color: #000;width:6rem;">'+obj.goodsName+'</span></div>'+
+          '<div style="margin-top: -0.25rem;"><span class="dis-inline" style="color: #666;width: 108%;font-size: 0.65rem">'+obj.createDate+'</span></div>'+
           '</div>'+
           '</div>').appendTo($('.myPrize_list'));
       });
@@ -153,6 +161,10 @@ $('.getwawa').on('click',function () {
 $('.getRecord').on('click',function () {
   $('#hd_ad_history_page_shezhi').slideUp(100);
   $('#hd_ad_history_page_getRecord').slideDown(100);
+  if(isAndroid) {
+    $('.vcp-player').css('height', '200px');
+    $('.vcp-player').find('video').css('height', '100%');
+  }
   var token = JSON.parse(window.localStorage.getItem('token'));
   var json = {"customerId":token.customerId,"currentPage":1};
   var str = encryptByDES(JSON.stringify(json));
@@ -165,13 +177,13 @@ $('.getRecord').on('click',function () {
       window.localStorage.setItem('allRecord',JSON.stringify(dataCatch));
       $.each(dataCatch,function (i,obj) {
         $('<div class="hd_ad_list w-percent-100 h-3">'+
-          '<div class="theRecord" style="background-color: #ffffff;height:3rem;width:100%;">' +
-          '<div class="dis-inline" style="text-align:left;width:15%;height: 3rem;vertical-align: middle;line-height: 3rem;"><img src="'+obj.img+'" alt="" style="height:2rem;"></div>' +
-          '<span class="dis-inline pad-l-half" style="width:60%;line-height: 2rem;height:3rem;vertical-align: top;text-align: left">' +
-          '<span class="dis-inline font-21 font-wei t-ellipsis" style="height: 1.5rem;line-height: 2.2rem;vertical-align: top;color:#666;">'+obj.goodsName+'</span>' +'<br>'+'<span class="dis-inline" style="color: #999;height: 1.5rem;line-height: 0.8rem;vertical-align: top;font-size: 0.6rem;">'+obj.createDate+'</span>'+'' +
+          '<div class="theRecord" style="background-color: #ffffff;height:3rem;width:100%;border-bottom: 1px solid #eee;">' +
+          '<div class="dis-inline" style="margin-left:-1.3rem;text-align:left;width:15%;height: 3rem;vertical-align: middle;line-height: 3rem;"><img src="'+obj.img+'" alt="" style="height:2rem;"></div>' +
+          '<span class="dis-inline pad-l-half t-ellipsis" style="width:50%;line-height: 2rem;height:3rem;vertical-align: top;text-align: left">' +
+          '<span class="dis-inline font-21 font-wei t-ellipsis" style="height: 1.5rem;line-height: 2.2rem;vertical-align: top;color:#666;width:6rem;">'+obj.goodsName+'</span>' +'<br>'+'<span class="dis-inline" style="color: #999;height: 1.5rem;line-height: 0.8rem;vertical-align: top;font-size: 0.65rem;">'+obj.createDate+'</span>'+'' +
           '</span>'+
-          '<div class="dis-inline" style="width:25%">' +
-          '<div style="text-align: left;height: 3rem;vertical-align: middle;line-height: 2.6rem;" class="dis-inline"><span style="color: #999;font-size: 0.6rem;">抓取娃娃失败</span></div>'+
+          '<div class="dis-inline" style="width:25%;margin-right: -0.5rem">' +
+          '<div style="text-align: left;height: 3rem;vertical-align: middle;line-height: 2.6rem;" class="dis-inline"><span style="color: #999;font-size: 0.65rem;">抓取娃娃失败</span></div>'+
           '</div>' +
           '</div>').appendTo($('.catch_list'));
       });

@@ -946,3 +946,7 @@ input[type="number"]::-webkit-outer-spin-button {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+/*安卓适配*/
+.android-mar{
+    margin-top: 1.5rem;
+}

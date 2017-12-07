@@ -34,28 +34,29 @@
 <!--<div class="pad-l-2" style="background-color: #fff;height: 3rem;line-height: 3rem;vertical-align: top;"><a href="./confirmChooseAdr.html" class="font-22">添加收货地址</a></div>-->
 <a href="./confirmChooseAdr.html">
     <div class="pad-l-1 h-3 line-h-3 v-align-t" style="background-color: #fff;">
-        <span class="font-22 name"></span><span class="dis-inline pad-l-2 mobile"></span>
-        <span class="dis-inline pad-l-4 h-6 line-h-6 v-align-t font-big goToChoose"></span>
+        <span class="font-22">收货人：</span><span class="font-22 name"></span><span class="dis-inline font-22 mobile" style="padding-left: 4rem;"></span>
+        <span class="dis-inline pad-l-4 h-6 v-align-t font-big goToChoose" style="margin-top:-0.5rem;padding-left: 15.5rem;line-height: 0rem;color:#999"><img
+                src="zpSrc/img/right.png" alt="" style="width:0.6rem;height:1rem;"></span>
     </div>
     <div class="pad-l-1 h-3 line-h-1 v-align-t" style="background-color: #fff;">
-        <span class="dis-inline font-21 address"></span><span class="dis-inline font-21 area"></span>
+        <span style="font-size: 0.6rem">收货地址：</span><span class="dis-inline address" style="font-size: 0.6rem"></span><span class="dis-inline area" style="font-size: 0.6rem"></span>
     </div>
 </a>
 <div id="catchSome" class="hd_ad_list"
-     style="width:100%;height:5rem;border-bottom: 1px solid #666;margin-top: 1rem;font-size: 0">
+     style="width:100%;height:5rem;border-bottom: 1px solid #666;margin-top: 0.8rem;font-size: 0">
 </div>
 <!--提交订单-->
-<div style="background-color: #fff;height: 2rem;position: fixed;left:0;right:0;bottom:0">
-    <div class="dis-inline font-21 v-align-t line-h-2 t-align-r" style="width: 25%"><span
+<div style="background-color: #fff;height: 2.5rem;position: fixed;left:0;right:0;bottom:0">
+    <div class="dis-inline font-21 v-align-t t-align-r" style="width: 25%;line-height: 2.5rem"><span
             style="color:#999;">满两件包邮</span></div>
-    <div class="dis-inline" style="width: 35%;text-align: center;height:2rem;">
+    <div class="dis-inline" style="width: 35%;text-align: center;height:2.5rem;">
         <span class="dis-inline pad-l-1 font-21"
-              style="height:2rem;line-height: 2rem;vertical-align: top;color: #FE7460;">邮费：￥<span
+              style="height:2.5rem;line-height: 2.5rem;vertical-align: top;color: #FE7460;">邮费：￥<span
                 id="totalPrice"></span>.00</span>
     </div>
     <div class="dis-inline payFirst"
-         style="width:35%;text-align: right;height:2rem;line-height:2rem;vertical-align: top">
-        <button style="background-color: #975429;border:none!important;width:6rem;height: 2rem;color:#fff;"
+         style="width:36%;text-align: right;height:2.5rem;line-height:2.5rem;vertical-align: top">
+        <button style="background-color: #975429;border:none!important;width:6.5rem;height: 2.5rem;color:#fff;margin-right: -0.3rem"
                 class="toPay">提交订单
         </button>
     </div>
@@ -84,8 +85,6 @@
     var allList = list.data;
     if (allList.length === 0) {
       $('.goToChoose').text('添加地址')
-    } else {
-      $('.goToChoose').text('>')
     }
     if (u == window.location.href.split('?')[0]) {
       $('.name').text(allList[0].name);
@@ -152,9 +151,9 @@
       $('<div class="dis-inline" style="background-color: #ffffff;height:5rem;width:90%;">' +
         '<div class="dis-inline" style="text-align:left;width:15%;height: 5rem;vertical-align: top;line-height: 5rem;"><img src="' + obj.img + '" alt="" style="height:4rem;"></div>' +
         '<span class="dis-inline pad-l-2 font-22 t-align-l" style="width:70%;">' +
-        '<span style="color: #666;height:2rem;line-height: 3rem;vertical-align: top;" class="dis-inline font-22 font-wei t-ellipsis">' + obj.goodsName + '</span>' +
-        '<span style="color: #999;height:1.5rem;line-height: 2.5rem;vertical-align: top;" class="dis-inline font-21">编号：' + obj.prizeId + '</span><br>' +
-        '<span style="color: #999;height:1.5rem;line-height: 1.5rem;vertical-align: top;" class="dis-inline font-21">' + obj.createDate + '</span>' +
+        '<span style="color: #666;height:2rem;line-height: 3rem;vertical-align: top;font-size: 0.7rem;" class="dis-inline font-wei t-ellipsis">' + obj.goodsName + '</span>' +
+        '<span style="color: #999;height:1.5rem;line-height: 1.5rem;vertical-align: top;font-size: 0.6rem;" class="dis-inline">编号：' + obj.prizeId + '</span><br>' +
+        '<span style="color: #999;height:1.5rem;line-height: 1rem;vertical-align: top;font-size: 0.6rem;" class="dis-inline">' + obj.createDate + '</span>' +
         '</span>' +
         '</div>' +
         '<div class="dis-inline v-align-t" style="background-color: #ffffff;height:5rem;width:10%;line-height: 5rem;">' +

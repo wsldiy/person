@@ -53,10 +53,10 @@
 <body style="background-color: #FDEC02;" class="hd_ad_list pad-t-1 pad-l-half pad-r-half">
 <div class="w-percent-100 h-4" style="border-bottom: 1px solid #666">
     <div style="background-color: #ffffff;" class="h-4 w-percent-100">
-        <div class="dis-inline t-align-l h-4 v-align-t line-h-4" style="width:15%;"><img src="" alt="" style="height:3rem;"></div>
+        <div class="dis-inline t-align-l h-4 v-align-t line-h-4" style="width:15%;"><img class="photo" src="" alt="" style="height:3rem;"></div>
         <span class="dis-inline pad-l-half font-22 w-percent-50">
-            <span style="color: #666;" class="dis-inline font-22 font-wei h-2 line-h-3 v-align-t" id="name"></span>
-            <span style="color: #999;" class="dis-inline font-20 h-2 line-h-2 v-align-t" id="date"></span>
+            <span style="color: #666;font-size: 0.8rem" class="dis-inline font-wei h-2 line-h-3 v-align-t t-ellipsis" id="name"></span>
+            <span style="color: #999;font-size: 0.6rem;" class="dis-inline h-2 line-h-2 v-align-t" id="date"></span>
         </span>
         <div class="dis-inline t-align-r h-4 line-h-4 v-align-t" style="width: 31%;text-align: center;">
             <div class="dis-inline font-21 h-3 v-align-m line-h-3"><span style="color: #999;" id="state"></span></div>
@@ -68,10 +68,11 @@
     <div style="background-color: #ffffff;" class="h-4 w-percent-100">
         <div class="hd_ad_list w-percent-100" style="height:3.5rem;border-bottom: 1px solid #666">
             <div style="background-color: #ffffff;height:3.5rem;" class="w-percent-100">
-                <div class="dis-inline t-align-c h-4 v-align-t line-h-4" style="width:30%;"><span class="font-22">问题类型</span></div>
+                <div class="dis-inline t-align-c h-4 v-align-t line-h-4" style="width:30%;"><span style="font-size: 0.7rem">问题类型</span></div>
                 <div class="dis-inline t-align-r h-4 line-h-4 v-align-t" style="width:65%;">
                     <div id="j-btn" class="dis-inline pad-l-1 h-3 v-align-m line-h-3">
-                        <span class="font-21 theChoose" style="color: #999">请选择</span><span class="color-9">&nbsp></span></div>
+                        <span class="font-21 theChoose" style="color: #999">请选择</span>&nbsp<span class="color-9"><img
+                            src="zpSrc/img/right.png" alt="" style="width:0.6rem;height:1rem"></span></div>
                 </div>
             </div>
         </div>
@@ -95,7 +96,7 @@
 <div class="dis-inline pad-t-2 w-percent-100 h-6">
     <div class="dis-inline w-percent-100 t-align-l h-4 line-h-1 v-align-t">
         <span style="color: #A5673E;" class="font-21 font-wei">温馨提示</span><br>
-        <span style="color: #A5673E;" class="font-16">请如实反馈，拒绝恶意虚假信息，违者将被小秘书关进小黑屋哦！</span>
+        <span style="color: #A5673E;font-size: 0.6rem">请如实反馈，拒绝恶意虚假信息，违者将被小秘书关进小黑屋哦！</span>
     </div>
 </div>
 <!--申诉打开遮罩-->
@@ -118,7 +119,7 @@
 //    插值
     var record = JSON.parse(window.localStorage.getItem('oneRecord'));
     record.extractStatus === 0?record.extractStatus = '抓取娃娃失败':record.extractStatus = '抓取娃娃成功';
-    $('img').attr('src',record.img);
+    $('.photo').attr('src',record.img);
     $('#name').text(record.goodsName);
     $('#date').text(record.createDate);
     $('#state').text(record.extractStatus);
